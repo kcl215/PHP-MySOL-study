@@ -11,7 +11,7 @@
 <body>
     <?php
     $db = new mysqli('localhost:8889', 'root', 'root', 'mydb');
-    echo 'DBに接続しました'
+    echo 'DBに接続しました。'
     ?>
 </body>
 
