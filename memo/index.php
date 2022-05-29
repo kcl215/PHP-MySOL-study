@@ -7,9 +7,21 @@ if (!$stmt) {
 }
 
 $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_NUMBER_INT);
+$page = ($page ?: 1);
+// if (!$page) {
+//     $page = 1;
+// }
 $start = ($page - 1) * 5;
-$stmt -> bind_param('i', $page);
-$stmt -> execute();
+$stmt -> bind_param('i', $start);
+$records = $db->query('SELECT count(*) AS cnt FROM memos');
+if ($records) {
+    while ($record = $records->fetch_assoc()) {
+        $count = floor($record['cnt'] / 5 + 1);
+    }
+} else {
+    echo $db->error;
+}
+$result = $stmt -> execute();
 // $memos = $db -> query('select * from memos order by id desc limit 0, 5');
 // if (!$memos) {
 //     die($db -> error);
@@ -28,6 +40,11 @@ $stmt -> execute();
     <h1>メモ帳</h1>
 
     <p><a href="input.html">新しいメモ</a></p>
+
+    <?php if ($count < $page): ?>
+        <p>表示するメモはありません</p>
+    <?php endif; ?>
+
 
     <?php $stmt -> bind_result($id, $memo, $created); ?>
     <?php while ($stmt -> fetch()): ?>
